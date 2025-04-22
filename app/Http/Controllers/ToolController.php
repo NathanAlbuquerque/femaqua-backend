@@ -50,4 +50,28 @@ class ToolController extends Controller
             'data' => new ToolResource($tool),
         ], 201);
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        // Encontrando a ferramenta pelo ID
+        $tool = Tool::find($id);
+
+        // Verificando se a ferramenta foi encontrada
+        if (!$tool) {
+            return response()->json([
+                'message' => 'Ferramenta não encontrada.',
+            ], 404);
+        }
+
+        // Deletando a ferramenta
+        $tool->delete();
+
+        // Retornando uma resposta de sucesso
+        return response()->json([
+            'message' => 'Ferramenta removida com sucesso.',
+        ], 200);
+    }
 }
