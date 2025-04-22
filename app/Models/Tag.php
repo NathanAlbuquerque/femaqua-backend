@@ -26,4 +26,11 @@ class Tag extends Model
     {
         return $this->belongsToMany(Tool::class);
     }
+
+    public static function getOrCreateIds(array $tags): array
+    {
+        return collect($tags)->map(function ($tag) {
+            return static::firstOrCreate(['name' => $tag])->id;
+        })->toArray();
+    }
 }
