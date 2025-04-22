@@ -1,0 +1,70 @@
+services:
+    # image project
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: femaqua-app
+        restart: unless-stopped
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        depends_on:
+            - redis
+        networks:
+            - femaqua-net
+
+    # nginx
+    nginx:
+        image: nginx:alpine
+        container_name: femaqua-nginx
+        restart: unless-stopped
+        ports:
+            - "8989:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - femaqua-net
+
+    # db mysql
+    db:
+        image: mysql:5.7.22
+        container_name: femaqua-db
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE:-femaqua}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+            MYSQL_PASSWORD: ${DB_PASSWORD:-userpass}
+            MYSQL_USER: ${DB_USERNAME:-username}
+        volumes:
+            - ./.docker/mysql/dbdata:/var/lib/mysql
+        ports:
+            - "3388:3306"
+        networks:
+            - femaqua-net
+
+    # PHPMyAdmin
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: femaqua-phpmyadmin
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        environment:
+            PMA_HOST: db
+            PMA_PORT: 3306
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-userpass}
+        networks:
+            - femaqua-net
+
+    # redis
+    redis:
+        image: redis:latest
+        container_name: femaqua-redis
+        networks:
+            - femaqua-net
+
+networks:
+    femaqua-net:
+        driver: bridge
