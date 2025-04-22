@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: Tool Management API
+  description: API para gerenciar ferramentas, incluindo criação, listagem e remoção.
+  version: 1.0.0
+paths:
+  /tools:
+    get:
+      summary: Listar todas as ferramentas
+      description: Retorna todas as ferramentas cadastradas com suas respectivas tags, com a possibilidade de filtrar por uma tag.
+      parameters:
+        - in: query
+          name: tag
+          required: false
+          description: Filtra as ferramentas pelas tags fornecidas.
+          schema:
+            type: string
+            example: node
+      responses:
+        '200':
+          description: Lista de ferramentas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: ID da ferramenta
+                    title:
+                      type: string
+                      description: Título da ferramenta
+                    link:
+                      type: string
+                      description: Link para a ferramenta
+                    description:
+                      type: string
+                      description: Descrição da ferramenta
+                    tags:
+                      type: array
+                      items:
+                        type: string
+                      description: Lista de tags associadas à ferramenta
+
+    post:
+      summary: Criar uma nova ferramenta
+      description: Cria uma nova ferramenta e associa tags, se fornecidas.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Título da ferramenta
+                link:
+                  type: string
+                  description: Link para a ferramenta
+                description:
+                  type: string
+                  description: Descrição da ferramenta
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Lista de tags associadas à ferramenta
+              required:
+                - title
+                - link
+                - description
+      responses:
+        '201':
+          description: Ferramenta criada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ferramenta cadastrada com sucesso.
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      title:
+                        type: string
+                      link:
+                        type: string
+                      description:
+                        type: string
+                      tags:
+                        type: array
+                        items:
+                          type: string
+    delete:
+      summary: Remover uma ferramenta
+      description: Deleta uma ferramenta pelo ID fornecido.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID da ferramenta a ser removida
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ferramenta removida com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ferramenta removida com sucesso.
+        '404':
+          description: Ferramenta não encontrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ferramenta não encontrada.
+
+  /tools/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        description: ID da ferramenta
+        schema:
+          type: integer
+
+components:
+  schemas:
+    Tool:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        link:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
