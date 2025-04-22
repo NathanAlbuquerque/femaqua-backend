@@ -7,15 +7,25 @@ use App\Http\Resources\ToolResource;
 use App\Models\Tag;
 use App\Models\Tool;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ToolController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tools = Tool::with('tags')->get();
+        $tag = $request->query('tag');
+
+        if ($tag) {
+            $tools = Tool::whereHas('tags', function($query) use ($tag) {
+                $query->where('name', $tag);
+            })->with('tags')->get();
+        } else {
+            $tools = Tool::with('tags')->get();
+        }
+
         return response()->json([
             'message' => 'Ferramentas recuperadas com sucesso.',
             'data' => ToolResource::collection($tools),
