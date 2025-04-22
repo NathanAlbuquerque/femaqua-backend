@@ -14,3 +14,12 @@ yarn-error.log
 /.idea
 /.vscode
 /.docker
+/.phpunit.cache
+/public/build
+/storage/pail
+.env.production
+.phpactor.json
+/auth.json
+/.fleet
+/.nova
+/.zed
